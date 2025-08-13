@@ -1,62 +1,78 @@
-!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rifa Sammuel - Números Reservados</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <title>Reservas Rifa Sammuel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
-      background: linear-gradient(to bottom, #0f172a, #1e293b);
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #0d47a1, #1976d2);
       color: white;
-      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 20px;
+      font-size: 2rem;
     }
     table {
-      width: 100%;
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto;
       border-collapse: collapse;
+      background: white;
+      color: black;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    th, td {
+      padding: 15px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+      font-size: 1.1rem;
     }
     th {
-      background-color: #2563eb;
+      background: #1565c0;
       color: white;
-      font-weight: bold;
-      padding: 12px;
-    }
-    td {
-      padding: 10px;
-      border-bottom: 1px solid #334155;
+      font-size: 1.2rem;
     }
     tr:hover {
-      background-color: #1e3a8a;
+      background: #f1f1f1;
+    }
+    @media (max-width: 768px) {
+      table, th, td {
+        font-size: 0.9rem;
+        padding: 10px;
+      }
     }
   </style>
 </head>
-<body class="min-h-screen p-6">
+<body>
 
-  <h1 class="text-4xl font-bold mb-6 text-center">📋 Números Reservados - Rifa Sammuel</h1>
-
-  <div class="overflow-x-auto bg-gray-800 rounded-lg shadow-lg p-4">
-    <table id="tablaReservas" class="text-left text-lg">
-      <thead>
-        <tr>
-          <th># Número</th>
-          <th>Nombre</th>
-          <th>Teléfono</th>
-          <th>Método de Pago</th>
-          <th>Reservado</th>
-        </tr>
-      </thead>
-      <tbody id="tablaBody">
-        <!-- Filas dinámicas -->
-      </tbody>
-    </table>
-  </div>
+  <h1>📋 Números Reservados - Rifa Sammuel</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Número</th>
+        <th>Nombre</th>
+        <th>Teléfono</th>
+        <th>Fecha Reserva</th>
+      </tr>
+    </thead>
+    <tbody id="tabla-reservas">
+      <tr><td colspan="4">Cargando datos...</td></tr>
+    </tbody>
+  </table>
 
   <!-- Firebase v8 -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
   <script>
-    // Configuración Firebase (API keys de la rifa Sammuel)
+    // 🔹 Configura con las credenciales de tu proyecto rifasammuel
     var firebaseConfig = {
       	apiKey: "AIzaSyDo3cgRT87JQkV9kgJG2mrPnUkb5HugH9Q",
   	authDomain: "rifasammuel.firebaseapp.com",
@@ -67,33 +83,34 @@
   	measurementId: "G-W3HY4MHHV4"
     };
 
-    // Inicializar Firebase
     firebase.initializeApp(firebaseConfig);
     var db = firebase.firestore();
 
-    // Referencia a la colección "numeros"
-    db.collection("numeros")
-      .orderBy("fechaReserva", "desc") // últimas reservas arriba
-      .onSnapshot((querySnapshot) => {
-        const tablaBody = document.getElementById("tablaBody");
-        tablaBody.innerHTML = ""; // limpiar tabla
+    const tabla = document.getElementById("tabla-reservas");
 
-        querySnapshot.forEach((doc) => {
+    // 🔹 Escucha en tiempo real la colección "numeros"
+    db.collection("numeros").orderBy("numero", "asc")
+      .onSnapshot((snapshot) => {
+        tabla.innerHTML = ""; // Limpia tabla
+        if (snapshot.empty) {
+          tabla.innerHTML = `<tr><td colspan="4">No hay números reservados</td></tr>`;
+          return;
+        }
+        snapshot.forEach(doc => {
           const data = doc.data();
-          const fila = `
+          const fecha = data.fechaReserva ? new Date(data.fechaReserva.seconds * 1000).toLocaleString() : "Sin fecha";
+          tabla.innerHTML += `
             <tr>
-              <td class="font-bold text-yellow-400">${data.numero ?? ''}</td>
-              <td>${data.nombre ?? ''}</td>
-              <td>${data.telefono ?? ''}</td>
-              <td>${data.metodoPago ?? ''}</td>
-              <td class="${data.reservado ? 'text-green-400' : 'text-red-400'} font-bold">
-                ${data.reservado ? '✅ Sí' : '❌ No'}
-              </td>
+              <td>${data.numero || "-"}</td>
+              <td>${data.nombre || "-"}</td>
+              <td>${data.telefono || "-"}</td>
+              <td>${fecha}</td>
             </tr>
           `;
-          tablaBody.innerHTML += fila;
         });
       });
   </script>
+
 </body>
 </html>
+
