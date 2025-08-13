@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Consulta Números Reservados</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background-color: #f4f4f4; }
+  </style>
+</head>
+<body>
+
+<h1>📋 Números Reservados</h1>
+<table id="tablaNumeros">
+  <thead>
+    <tr>
+      <th>Número</th>
+      <th>Reservado Por</th>
+      <th>Teléfono</th>
+      <th>Email</th>
+      <th>Fecha</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
+  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
+
+  // 🔹 Configuración Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyDo3cgRT87JQkV9kgJG2mrPnUkb5HugH9Q",
+    authDomain: "rifasammuel.firebaseapp.com",
+    projectId: "rifasammuel",
+    storageBucket: "rifasammuel.firebasestorage.app",
+    messagingSenderId: "707645550462",
+    appId: "1:707645550462:web:42735685340fb79e5d8d2f",
+    measurementId: "G-W3HY4MHHV4"
+  };
+
+  // Inicializar Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Función para cargar números reservados
+  async function cargarNumeros() {
+    const querySnapshot = await getDocs(collection(db, "numeros"));
+    const tbody = document.querySelector("#tablaNumeros tbody");
+    tbody.innerHTML = ""; // limpiar
+
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      // Solo mostrar si está reservado
+      if (data.reservado === true) {
+        const fila = `
+          <tr>
+            <td>${data.numero || ''}</td>
+            <td>${data.nombre || ''}</td>
+            <td>${data.telefono || ''}</td>
+            <td>${data.email || ''}</td>
+            <td>${data.fecha || ''}</td>
+          </tr>
+        `;
+        tbody.innerHTML += fila;
+      }
+    });
+  }
+
+  cargarNumeros();
+</script>
+
+</body>
+</html>
