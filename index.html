@@ -1,218 +1,151 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Admin Rifa — Tiempo Real</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    :root { --bg:#0f172a; --card:#111827; --text:#e5e7eb; --accent:#22d3ee; }
-    html,body{height:100%;}
-    body{
-      margin:0; font-family: system-ui, Arial, sans-serif; background:linear-gradient(180deg,#0b132b,#1c2541);
-      color:var(--text); padding:24px;
-    }
-    .wrap{max-width:1280px; margin:0 auto;}
-    h1{font-size:28px; margin:0 0 8px;}
-    p.muted{opacity:.8; margin:0 0 24px;}
-    .grid{display:grid; gap:24px;}
-    @media(min-width:900px){ .grid{ grid-template-columns: 1fr 1fr; } }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservas - Rifa Sammuel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0d1117;
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
 
-    .card{
-      background:rgba(17,24,39,.85); border:1px solid rgba(255,255,255,.06);
-      border-radius:16px; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,.25);
-      backdrop-filter: blur(6px);
-    }
-    .card h2{margin:0 0 12px; font-size:22px;}
-    .meta{display:flex; gap:16px; flex-wrap:wrap; margin-bottom:12px; font-size:14px; opacity:.9}
-    .pill{background:rgba(34,211,238,.15); border:1px solid rgba(34,211,238,.4); color:#a5f3fc; padding:4px 10px; border-radius:999px;}
-    .count{font-weight:700;}
+        h1 {
+            background: linear-gradient(90deg, #007bff, #ff6600);
+            padding: 20px;
+            margin: 0;
+            font-size: 2.5rem;
+        }
 
-    table{width:100%; border-collapse:collapse; font-size:18px;}
-    thead th{
-      text-align:left; padding:12px 10px; position:sticky; top:0;
-      background:linear-gradient(180deg,#0b1222,#0e152a); border-bottom:1px solid rgba(255,255,255,.12);
-    }
-    tbody td{padding:10px; border-bottom:1px solid rgba(255,255,255,.06);}
-    tr:nth-child(even) td{background:rgba(255,255,255,.02);}
-    .empty{padding:18px; text-align:center; opacity:.85;}
-    .ok{color:#34d399;}
-    .warn{color:#fbbf24;}
-    .err{color:#f87171;}
-    .footer{opacity:.7; font-size:14px; margin-top:18px;}
-  </style>
+        table {
+            width: 95%;
+            margin: 30px auto;
+            border-collapse: collapse;
+            font-size: 1.3rem;
+            background-color: #161b22;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #30363d;
+        }
+
+        th {
+            background-color: #21262d;
+            color: #ff6600;
+            font-size: 1.4rem;
+        }
+
+        tr:nth-child(even) {
+            background-color: #1c1f26;
+        }
+
+        tr:hover {
+            background-color: #282e38;
+        }
+
+        .status-reservado {
+            color: #ff4d4d;
+            font-weight: bold;
+        }
+
+        .status-libre {
+            color: #4dff4d;
+            font-weight: bold;
+        }
+
+        footer {
+            margin-top: 20px;
+            padding: 15px;
+            font-size: 1rem;
+            background-color: #21262d;
+        }
+    </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>📊 Administración — Rifa Sammuel (tiempo real)</h1>
-  <p class="muted">Vista en vivo de reservas. Si usas <strong>colección <code>reservas</code></strong> o solo marcas en <strong><code>numeros</code></strong>, aquí lo verás.</p>
+    <h1>📋 Números Reservados - Rifa Sammuel</h1>
 
-  <div class="grid">
-    <!-- PANEL 1: Colección 'reservas' -->
-    <section class="card">
-      <h2>Reservas (colección <code>reservas</code>)</h2>
-      <div class="meta">
-        <span class="pill">Actualiza en vivo</span>
-        <span>Total: <span id="count-reservas" class="count">0</span></span>
-      </div>
-      <div style="overflow:auto; max-height:65vh; border-radius:12px;">
-        <table>
-          <thead>
+    <table id="tablaReservas">
+        <thead>
             <tr>
-              <th>Número</th>
-              <th>Nombre</th>
-              <th>Teléfono</th>
-              <th>Email</th>
-              <th>Método</th>
-              <th>Fecha</th>
+                <th>Número</th>
+                <th>Nombre</th>
+                <th>Estado</th>
+                <th>Fecha de Reserva</th>
             </tr>
-          </thead>
-          <tbody id="tbody-reservas">
-            <tr><td class="empty" colspan="6">Cargando…</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="footer">Muestra documentos de la colección <code>reservas</code> (recomendado para datos de comprador).</div>
-    </section>
-
-    <!-- PANEL 2: Colección 'numeros' con reservado = true -->
-    <section class="card">
-      <h2>Números reservados (colección <code>numeros</code>)</h2>
-      <div class="meta">
-        <span class="pill">Actualiza en vivo</span>
-        <span>Reservados: <span id="count-numeros" class="count">0</span></span>
-      </div>
-      <div style="overflow:auto; max-height:65vh; border-radius:12px;">
-        <table>
-          <thead>
+        </thead>
+        <tbody id="tablaBody">
             <tr>
-              <th>Número</th>
-              <th>Reservado</th>
-              <th>Nombre</th>
-              <th>Teléfono</th>
-              <th>Email</th>
-              <th>Fecha</th>
+                <td colspan="4">Cargando datos...</td>
             </tr>
-          </thead>
-          <tbody id="tbody-numeros">
-            <tr><td class="empty" colspan="6">Cargando…</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="footer">Lee la colección <code>numeros</code>; si un doc tiene <code>reservado: true</code> aparece aquí.</div>
-    </section>
-  </div>
-</div>
+        </tbody>
+    </table>
 
-<!-- Firebase (Módulos) -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-  import {
-    getFirestore, collection, onSnapshot, query, orderBy
-  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    <footer>
+        © 2025 Rifa Sammuel Tobar - Todos los derechos reservados
+    </footer>
 
-  // 🔑 Config de tu proyecto 'rifasammuel'
-  const firebaseConfig = {
-    apiKey: "AIzaSyDo3cgRT87JQkV9kgJG2mrPnUkb5HugH9Q",
-    authDomain: "rifasammuel.firebaseapp.com",
-    projectId: "rifasammuel",
-    storageBucket: "rifasammuel.firebasestorage.app",
-    messagingSenderId: "707645550462",
-    appId: "1:707645550462:web:42735685340fb79e5d8d2f",
-    measurementId: "G-W3HY4MHHV4"
-  };
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"></script>
 
-  // Init
-  const app = initializeApp(firebaseConfig);
-  const db  = getFirestore(app);
+    <script>
+        // Configuración Firebase (API de rifasammuel)
+        const firebaseConfig = {
+            apiKey: "AIzaSyA-AZf2qjP0LZsA7Yh6DzR6pZGy4MPf5iQ",
+            authDomain: "rifasammuel.firebaseapp.com",
+            projectId: "rifasammuel",
+            storageBucket: "rifasammuel.appspot.com",
+            messagingSenderId: "814275450949",
+            appId: "1:814275450949:web:4d72f4cda97f9a4bb5d07c"
+        };
 
-  // Helpers
-  const fmtFecha = (v) => {
-    if (!v) return "";
-    // Soporta string o Timestamp
-    try {
-      if (typeof v === "string") return v;
-      if (v.toDate) return v.toDate().toLocaleString();
-    } catch {}
-    return String(v);
-  };
-  const safe = (v) => (v ?? "");
+        // Inicializar Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-  // ====== PANEL RESERVAS (colección 'reservas') ======
-  const tbodyReservas = document.getElementById("tbody-reservas");
-  const countReservas = document.getElementById("count-reservas");
+        const tablaBody = document.getElementById("tablaBody");
 
-  // Ordena por fecha desc si existe; si tu campo es 'creadoEn', cámbialo aquí:
-  const qReservas = query(collection(db, "reservas"), orderBy("fecha", "desc"));
+        // Leer datos de la colección "numeros"
+        function cargarReservas() {
+            db.collection("numeros").orderBy("numero", "asc").onSnapshot((snapshot) => {
+                tablaBody.innerHTML = "";
 
-  onSnapshot(qReservas, (snap) => {
-    let rows = [];
-    snap.forEach((doc) => {
-      const d = doc.data();
-      rows.push(`
-        <tr>
-          <td>${safe(d.numero)}</td>
-          <td>${safe(d.nombre)}</td>
-          <td>${safe(d.telefono)}</td>
-          <td>${safe(d.email)}</td>
-          <td>${safe(d.pago ?? d.metodo ?? "")}</td>
-          <td>${fmtFecha(d.fecha ?? d.creadoEn)}</td>
-        </tr>
-      `);
-    });
+                if (snapshot.empty) {
+                    tablaBody.innerHTML = `<tr><td colspan="4">No hay reservas registradas</td></tr>`;
+                    return;
+                }
 
-    countReservas.textContent = snap.size;
-    tbodyReservas.innerHTML = rows.length
-      ? rows.join("")
-      : `<tr><td class="empty" colspan="6">No hay registros en <code>reservas</code>.</td></tr>`;
-  }, (err) => {
-    tbodyReservas.innerHTML = `<tr><td class="err" colspan="6">Error leyendo <code>reservas</code>: ${safe(err.message)}</td></tr>`;
-  });
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const estado = data.estado ? data.estado.toLowerCase() : "libre";
+                    const fechaReserva = data.fechaReserva
+                        ? new Date(data.fechaReserva.seconds * 1000).toLocaleString()
+                        : "-";
 
-  // ====== PANEL NÚMEROS (colección 'numeros' con reservado=true) ======
-  const tbodyNumeros = document.getElementById("tbody-numeros");
-  const countNumeros = document.getElementById("count-numeros");
+                    const fila = `
+                        <tr>
+                            <td>${data.numero || "-"}</td>
+                            <td>${data.nombre || "-"}</td>
+                            <td class="${estado === 'reservado' ? 'status-reservado' : 'status-libre'}">
+                                ${estado.charAt(0).toUpperCase() + estado.slice(1)}
+                            </td>
+                            <td>${fechaReserva}</td>
+                        </tr>
+                    `;
+                    tablaBody.innerHTML += fila;
+                });
+            });
+        }
 
-  // Escucha toda la colección y filtra en cliente para no exigir índices
-  onSnapshot(collection(db, "numeros"), (snap) => {
-    const reservados = [];
-    snap.forEach((doc) => {
-      const d = doc.data();
-      const reservado = d.reservado === true || d.estado === "reservado";
-      if (reservado) {
-        reservados.push({
-          id: doc.id,
-          ...d
-        });
-      }
-    });
-
-    // Ordenar por número (por ID si no hay campo numero)
-    reservados.sort((a,b) => {
-      const na = Number(a.numero ?? a.id);
-      const nb = Number(b.numero ?? b.id);
-      return na - nb;
-    });
-
-    countNumeros.textContent = reservados.length;
-    if (!reservados.length) {
-      tbodyNumeros.innerHTML = `<tr><td class="empty" colspan="6">No hay números reservados en <code>numeros</code>.</td></tr>`;
-      return;
-    }
-
-    tbodyNumeros.innerHTML = reservados.map((d) => `
-      <tr>
-        <td>${safe(d.numero ?? d.id)}</td>
-        <td class="ok">Sí</td>
-        <td>${safe(d.nombre)}</td>
-        <td>${safe(d.telefono)}</td>
-        <td>${safe(d.email)}</td>
-        <td>${fmtFecha(d.fecha ?? d.vendidoEn ?? d.creadoEn)}</td>
-      </tr>
-    `).join("");
-
-  }, (err) => {
-    tbodyNumeros.innerHTML = `<tr><td class="err" colspan="6">Error leyendo <code>numeros</code>: ${safe(err.message)}</td></tr>`;
-  });
-</script>
+        cargarReservas();
+    </script>
 </body>
 </html>
